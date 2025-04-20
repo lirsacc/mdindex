@@ -1,20 +1,26 @@
 [project]
 name = "mdindex"
-version = "0.1.0"
-description = "Add your description here"
+description = "Create index files and table of contents for collections of markdown files."
 readme = "README.md"
 authors = [
     { name = "Charles Lirsac", email = "code@lirsac.com" }
 ]
 requires-python = ">=3.9"
+dynamic = ["version"]
+classifiers = []
+
 dependencies = []
 
 [project.scripts]
-mdindex = "mdindex:main"
+mdindex = "mdindex.__main__:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/mdindex/__main__.py"
+
 
 [dependency-groups]
 dev = [
