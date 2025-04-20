@@ -1,0 +1,46 @@
+import itertools
+import shutil
+import subprocess
+import tempfile
+from collections.abc import Iterable, Iterator
+from pathlib import Path
+
+import pytest
+
+EXAMPLES_DIR = Path(__file__).parent / "examples"
+
+
+@pytest.fixture
+def test_dir() -> Iterator[Path]:
+    with tempfile.TemporaryDirectory() as tempdir:
+        shutil.copytree(EXAMPLES_DIR, tempdir, dirs_exist_ok=True)
+        yield Path(tempdir)
+
+
+# Smoke test the base copy worked as expected
+def test_smoke(test_dir: Path) -> None:
+    assert take_snapshot(EXAMPLES_DIR) == take_snapshot(test_dir)
+
+
+def take_snapshot(ref: Path) -> str:
+    return "\n".join(
+        itertools.chain.from_iterable(
+            [
+                f">>>> START FILE: {x.relative_to(ref)}",
+                x.read_text(),
+                "<<<< END FILE",
+            ]
+            for x in ref.glob("**/*.md")
+        )
+    )
+
+
+def test_examples(test_dir: Path, snapshot: object) -> None:
+    subprocess.run(
+        ["python", "-m", "mdindex", str(test_dir), "-r"],
+        cwd=test_dir,
+        check=True,
+        capture_output=True,
+    )
+
+    assert snapshot == take_snapshot(test_dir)

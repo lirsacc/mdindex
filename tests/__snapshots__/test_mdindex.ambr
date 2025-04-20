@@ -1,0 +1,137 @@
+# serializer version: 1
+# name: test_examples
+  '''
+  >>>> START FILE: root.md
+  # Root file
+  
+  <<<< END FILE
+  >>>> START FILE: README.md
+  # Examples for testing
+  
+  <!-- mdindex:summary:start -->
+  <!-- mdindex:summary:end -->
+  
+  ---
+  
+  This file should end up containing a summary above this.
+  
+  <<<< END FILE
+  >>>> START FILE: foo/README.md
+  <!-- mdindex:index:start -->
+  # foo
+  
+  <!-- WARN: This file is auto-generated. Do not edit manually. -->
+  
+  - [This file should be included with this title](./one.md)
+  - [This file should be included with this title too](./two.md)
+  - [This uses an underline title which should also work](./underlined.md)
+  - [Deep](./deep)
+    - [Nested1](./deep/nested1.md)
+    - [Deeper](./deep/deeper)
+      - [Nested2](./deep/deeper/nested2.md)
+      - [Too Deep](./deep/deeper/too-deep)
+  <!-- mdindex:index:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: foo/one.md
+  # This file should be included with this title
+  
+  Content after the title doesn't matter.
+  
+  <<<< END FILE
+  >>>> START FILE: foo/two.md
+  Content before the title doesn't matter we pick the first one.
+  
+  # This file should be included with this title too
+  
+  Content after the title still doesn't matter.
+  
+  <<<< END FILE
+  >>>> START FILE: foo/underlined.md
+  This uses an underline title which should also work
+  ===================================================
+  
+  <<<< END FILE
+  >>>> START FILE: baz/dash-cased-filename.md
+  This file doesn't have a title in the file so we'll include the title inferred from the filename, parsing dash case into title case.
+  
+  <<<< END FILE
+  >>>> START FILE: baz/snake_cased_filename copy.md
+  This file doesn't have a title in the file so we'll include the title inferred from the filename, parsing snake case into title case.
+  
+  <<<< END FILE
+  >>>> START FILE: baz/README.md
+  <!-- mdindex:index:start -->
+  # baz
+  
+  <!-- WARN: This file is auto-generated. Do not edit manually. -->
+  
+  - [Camel Cased Filename](./camelCasedFilename.md)
+  - [Dash Cased Filename](./dash-cased-filename.md)
+  - [Snake Cased Filename Copy](./snake_cased_filename%20copy.md)
+  <!-- mdindex:index:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: baz/camelCasedFilename.md
+  This file doesn't have a title in the file so we'll include the title inferred from the filename, parsing camel case into title case.
+  
+  <<<< END FILE
+  >>>> START FILE: bar/README.md
+  # Examples: bar/README
+  
+  This file should not end up containing a summary as it exists already without markers.
+  
+  <<<< END FILE
+  >>>> START FILE: bar/one.md
+  
+  <<<< END FILE
+  >>>> START FILE: bar/two.md
+  
+  <<<< END FILE
+  >>>> START FILE: foo/deep/nested1.md
+  
+  <<<< END FILE
+  >>>> START FILE: foo/deep/README.md
+  <!-- mdindex:index:start -->
+  # deep
+  
+  <!-- WARN: This file is auto-generated. Do not edit manually. -->
+  
+  - [Nested1](./nested1.md)
+  - [Deeper](./deeper)
+    - [Nested2](./deeper/nested2.md)
+    - [Too Deep](./deeper/too-deep)
+      - [Nested3](./deeper/too-deep/nested3.md)
+  <!-- mdindex:index:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: foo/deep/deeper/README.md
+  <!-- mdindex:index:start -->
+  # deeper
+  
+  <!-- WARN: This file is auto-generated. Do not edit manually. -->
+  
+  - [Nested2](./nested2.md)
+  - [Too Deep](./too-deep)
+    - [Nested3](./too-deep/nested3.md)
+  <!-- mdindex:index:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: foo/deep/deeper/nested2.md
+  
+  <<<< END FILE
+  >>>> START FILE: foo/deep/deeper/too-deep/README.md
+  <!-- mdindex:index:start -->
+  # too-deep
+  
+  <!-- WARN: This file is auto-generated. Do not edit manually. -->
+  
+  - [Nested3](./nested3.md)
+  <!-- mdindex:index:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: foo/deep/deeper/too-deep/nested3.md
+  
+  <<<< END FILE
+  '''
+# ---

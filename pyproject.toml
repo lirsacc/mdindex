@@ -24,4 +24,23 @@ path = "src/mdindex/__main__.py"
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.399",
+    "pytest>=8.3.5",
+    "ruff>=0.11.6",
+    "syrupy>=4.9.1",
 ]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D", "PLR0913", "TD", "FIX", "COM812"]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/**/*.py" = ["D", "S"]
+"noxfile.py" = ["D", "S"]
+
+[tool.pyright]
+include = ["src", "tests"]
+typeCheckingMode = "standard"
