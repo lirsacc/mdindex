@@ -1,0 +1,21 @@
+[project]
+name = "mdindex"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Charles Lirsac", email = "code@lirsac.com" }
+]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+mdindex = "mdindex:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+]
