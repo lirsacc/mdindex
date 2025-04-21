@@ -287,7 +287,10 @@ def index_operations(section: IndexNode, ctx: Context) -> Operation:
 
 def extract_headings(lines: list[str]) -> Iterable[Heading]:
     within_ignored_block = False
-    for i, (a, b) in enumerate(zip(lines, [*lines[1:], None])):
+    if not lines:
+        return
+
+    for i, (a, b) in enumerate(zip(lines, [*lines[1:], None], strict=True)):
         if a.startswith("```"):
             within_ignored_block = not within_ignored_block
             continue
