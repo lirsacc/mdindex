@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
+import functools
 import logging
 import re
 import sys
@@ -148,6 +149,7 @@ def build_tree(directory: Path, index_file: str, files: Iterable[Path]) -> Index
     return root
 
 
+@functools.lru_cache(maxsize=128)
 def get_lines(filepath: Path) -> list[str]:
     return [x.rstrip("\n") for x in filepath.open().readlines()]
 
