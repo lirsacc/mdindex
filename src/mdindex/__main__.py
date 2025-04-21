@@ -420,7 +420,6 @@ def apply(op: Operation) -> None:
 
 def dry_run(op: Operation) -> bool:
     contents = "\n".join(op.lines) + "\n"
-    logger.info("Would write to file %s (%s)", op.path, op.action)
     if (not op.path.exists()) or op.path.read_text() != contents:
         logger.info("%s is not up to date", op.path)
         return True
@@ -532,7 +531,7 @@ def main() -> None:
         operations = process(root, ctx, recursive=args.recursive)
 
         if args.check:
-            if any(not dry_run(op) for op in operations):
+            if any(dry_run(op) for op in operations):
                 if ctx.command:
                     logger.info("To update run: %s", ctx.command)
                 sys.exit(1)
