@@ -152,30 +152,20 @@ def get_lines(filepath: Path) -> list[str]:
     return [x.rstrip("\n") for x in filepath.open().readlines()]
 
 
-def extract_title(lines: list[str]) -> tuple[int, str] | None:
-    lines = list(lines)
-    for i, (a, b) in enumerate(zip(lines, [*lines[1:], None])):
-        if a.startswith("# "):
-            return i, a[2:].strip()
-        if b and re.match(r"==+", b) and (inner := a.strip()):
-            return i, inner
-    return None
-
-
 def titlecase(value: str) -> str:
     return re.sub(r"(?<=[a-z])(?=[A-Z])|[-_]", " ", value).title()
 
 
 def get_title(filepath: Path) -> str:
-    if extracted := extract_title(get_lines(filepath)):
-        return extracted[1]
+    if header := next(iter(extract_headers(get_lines(filepath))), None):
+        return header.value
     return titlecase(filepath.stem)
 
 
 def get_section_title(path: Path, ctx: Context) -> str:
     index = path / ctx.index_file
-    if index.exists() and (extracted := extract_title(get_lines(path / ctx.index_file))):
-        return extracted[1]
+    if index.exists() and (extracted := get_title(index)):
+        return extracted
     return titlecase(path.name)
 
 
