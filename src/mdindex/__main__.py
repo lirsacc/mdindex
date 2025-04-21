@@ -321,7 +321,10 @@ def main() -> None:
         action="append",
         default=[],
         required=False,
-        help="Glob patterns to ignore. This applies to input directory and files.",
+        help=(
+            "Glob patterns to ignore. This applies to input directory and files and relies on "
+            "fnmatch behaviour on the path relative to the root directory."
+        ),
     )
     parser.add_argument(
         "--check",

@@ -135,3 +135,47 @@
   <<<< END FILE
   '''
 # ---
+# name: test_ignore
+  '''
+  >>>> START FILE: README.md
+  <!-- mdindex:index:start -->
+  # foo
+  
+  <!-- WARN: This file is auto-generated. Do not edit manually. -->
+  
+  - [This file should be included with this title](./one.md)
+  - [This file should be included with this title too](./two.md)
+  - [This uses an underline title which should also work](./underlined.md)
+  <!-- mdindex:index:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: one.md
+  # This file should be included with this title
+  
+  Content after the title doesn't matter.
+  
+  <<<< END FILE
+  >>>> START FILE: two.md
+  Content before the title doesn't matter we pick the first one.
+  
+  # This file should be included with this title too
+  
+  Content after the title still doesn't matter.
+  
+  <<<< END FILE
+  >>>> START FILE: underlined.md
+  This uses an underline title which should also work
+  ===================================================
+  
+  <<<< END FILE
+  >>>> START FILE: deep/nested1.md
+  
+  <<<< END FILE
+  >>>> START FILE: deep/deeper/nested2.md
+  
+  <<<< END FILE
+  >>>> START FILE: deep/deeper/too-deep/nested3.md
+  
+  <<<< END FILE
+  '''
+# ---
