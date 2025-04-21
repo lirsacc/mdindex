@@ -36,7 +36,7 @@
   <<<< END FILE
   >>>> START FILE: foo/README.md
   <!-- mdindex:index:start -->
-  # foo
+  # Foo
   
   <!-- WARN: This file is auto-generated. Do not edit manually. -->
   
@@ -80,7 +80,7 @@
   <<<< END FILE
   >>>> START FILE: baz/README.md
   <!-- mdindex:index:start -->
-  # baz
+  # Baz
   
   <!-- WARN: This file is auto-generated. Do not edit manually. -->
   
@@ -111,7 +111,7 @@
   <<<< END FILE
   >>>> START FILE: foo/deep/README.md
   <!-- mdindex:index:start -->
-  # deep
+  # Deep
   
   <!-- WARN: This file is auto-generated. Do not edit manually. -->
   
@@ -125,7 +125,7 @@
   <<<< END FILE
   >>>> START FILE: foo/deep/deeper/README.md
   <!-- mdindex:index:start -->
-  # deeper
+  # Deeper
   
   <!-- WARN: This file is auto-generated. Do not edit manually. -->
   
@@ -140,7 +140,7 @@
   <<<< END FILE
   >>>> START FILE: foo/deep/deeper/too-deep/README.md
   <!-- mdindex:index:start -->
-  # too-deep
+  # Too Deep
   
   <!-- WARN: This file is auto-generated. Do not edit manually. -->
   
@@ -246,7 +246,7 @@
   '''
   >>>> START FILE: README.md
   <!-- mdindex:index:start -->
-  # foo
+  # Foo
   
   <!-- WARN: This file is auto-generated. Do not edit manually. -->
   

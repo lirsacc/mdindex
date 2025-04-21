@@ -193,7 +193,7 @@ def render_index(section: IndexNode, ctx: Context, *, max_depth: int) -> list[st
 def render_full_index(*, name: str, inner: list[str], command: str | None = None) -> list[str]:
     return [
         INDEX_START_MARKER,
-        f"# {name}",
+        f"# {titlecase(name)}",
         "",
         WARNING_FILE,
         *([f"{WARNING_COMMAND.format(command=command)}"] if command else ()),
