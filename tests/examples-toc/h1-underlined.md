@@ -1,0 +1,16 @@
+h1-underlined
+==========
+
+This toc should still be well formatted without an h1 title and inserted just
+after the first h1 title.
+
+## Some h2 title
+
+### Some h3 title
+
+#### Some h4 title
+
+Some underlined h2 title
+---------
+
+#### Some h4 title at the wrong nesting level

@@ -8,6 +8,11 @@ doesn't exist it will be created with some basic structure, otherwise this looks
 for a section delimited by `<!-- mdindex:index:start -->` and `<!--
 mdindex:index:start -->` to replace.
 
+Optionally the --toc flag will enable table of content generation within non
+index files. The table of content will be inserted either between a section
+delimited by `<!-- mdindex:toc:start -->` and `<!-- mdindex:toc:start -->`,
+directly after the first H1 heading or directly before the first H2 heading.
+
 --check can be used for dry runs and validating files have been processed.
 """
 
@@ -18,6 +23,7 @@ import fnmatch
 import logging
 import re
 import sys
+import unicodedata
 import urllib.parse
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -35,6 +41,9 @@ WARNING_SECTION = "<!-- WARN: This section is auto-generated. Do not edit manual
 
 INDEX_START_MARKER = "<!-- mdindex:index:start -->"
 INDEX_END_MARKER = "<!-- mdindex:index:end -->"
+
+TOC_START_MARKER = "<!-- mdindex:toc:start -->"
+TOC_END_MARKER = "<!-- mdindex:toc:end -->"
 
 
 logger = logging.getLogger()
@@ -69,6 +78,9 @@ class Context:
     index_file: str = "README.md"
     command: str | None = None
     max_depth: int = 2
+    render_toc: bool = False
+    toc_min_length: int = 2
+    toc_max_level: int = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,6 +95,28 @@ class Operation:
     action: Action
     path: Path
     lines: list[str]
+
+
+@dataclass(frozen=True, slots=True)
+class Header:
+    level: int
+    value: str
+    underlined: bool
+    lineno: int
+
+    @property
+    def previous_line(self) -> int:
+        return self.lineno - 1
+
+    @property
+    def next_line(self) -> int:
+        return self.lineno + 2 if self.underlined else self.lineno + 1
+
+
+@dataclass(frozen=True, slots=True)
+class HeaderNode:
+    header: Header
+    children: list[HeaderNode] = field(default_factory=list)
 
 
 def filter_files(directory: Path, *, ignored_globs: Sequence[str] = ()) -> Iterable[Path]:
@@ -259,11 +293,127 @@ def index_operations(section: IndexNode, ctx: Context) -> Operation:
         return Operation("create", output_file, contents)
 
 
+def extract_headers(lines: list[str]) -> Iterable[Header]:
+    lines = list(lines)
+    for i, (a, b) in enumerate(zip(lines, [*lines[1:], None])):
+        if match := re.match(r"^(#+) (.*)$", a):
+            level = len(match.group(1))
+            yield Header(level, match.group(2), underlined=False, lineno=i)
+        if b and re.match(r"==+", b) and (inner := a.strip()):
+            yield Header(1, inner, underlined=True, lineno=i)
+        if b and re.match(r"--+", b) and (inner := a.strip()):
+            yield Header(2, inner, underlined=True, lineno=i)
+
+
+def build_headers_tree(headers: Iterable[Header], min_level: int = 2) -> Iterable[HeaderNode]:
+    root_nodes: list[HeaderNode] = []
+    stack: list[HeaderNode] = []
+
+    for header in headers:
+        if header.level < min_level:
+            continue
+
+        node = HeaderNode(header=header)
+
+        while stack and header.level <= stack[-1].header.level:
+            stack.pop()
+
+        if stack:
+            stack[-1].children.append(node)
+        else:
+            root_nodes.append(node)
+
+        stack.append(node)
+
+    return root_nodes
+
+
+def slugify(value: str) -> str:
+    # This should mostly end up matching GFM's approach for most things
+    # Adapted from Django's slugify util
+    value = unicodedata.normalize("NFKC", value)
+    value = re.sub(r"[^\w\s-]", "", value.lower())
+    return re.sub(r"[-\s]+", "-", value).strip("-_")
+
+
+def toc_lines(nodes: list[HeaderNode], *, start_depth: int = 0, max_depth: int) -> Iterable[str]:
+    for x in nodes:
+        yield f"{('  ' * start_depth)}- [{x.header.value}](#{slugify(x.header.value)})"
+        if start_depth < max_depth:
+            yield from toc_lines(x.children, start_depth=start_depth + 1, max_depth=max_depth)
+
+
+def render_toc(inner: list[str], ctx: Context) -> list[str]:
+    return [
+        TOC_START_MARKER,
+        WARNING_SECTION,
+        *([f"{WARNING_COMMAND.format(command=ctx.command)}"] if ctx.command else ()),
+        "",
+        *inner,
+        "",
+        TOC_END_MARKER,
+    ]
+
+
+def guess_toc_location_and_level(headers: list[Header]) -> tuple[tuple[int, int], int]:
+    min_level = min(x.level for x in headers)
+    first = headers[0]
+    at_min_level = [x for x in headers if x.level == min_level]
+
+    if len(at_min_level) > 1 and first.level == min_level:
+        # Multiple top levels as long as everything exists under one of them, we
+        # put it before the first entry and include the top level.
+        return (first.previous_line, first.previous_line), min_level
+    elif len(at_min_level) == 1 and first.level == min_level:
+        # Single top level as long as everything is under it, we put it after
+        # the first entry and do not include the top level as it serves as
+        # document title.
+        return (first.next_line, first.next_line), min_level + 1
+    else:
+        # We may have a top level entry but some headers at lower levels come
+        # before it just put it at the top and include all.
+        return (0, 0), min_level
+
+
+def toc_operation(filepath: Path, ctx: Context) -> Operation | None:
+    lines = get_lines(filepath)
+    headers = list(extract_headers(lines))
+
+    if len(headers) < ctx.toc_min_length:
+        return None
+
+    section_marks = find_marked_section(lines, TOC_START_MARKER, TOC_END_MARKER)
+
+    if section_marks is not None:
+        # We know where to put the TOC, assume well formed and just ignore the top level.
+        start, end = section_marks
+        min_included_level = min(x.level for x in headers) + 1
+    else:
+        # Otherwise guesswork to find a rational place to put it
+        (start, end), min_included_level = guess_toc_location_and_level(headers)
+
+    toc = list(
+        toc_lines(
+            list(build_headers_tree(headers, min_level=min_included_level)),
+            max_depth=ctx.toc_max_level,
+        )
+    )
+    if len(toc) >= ctx.toc_min_length:
+        inner = render_toc(toc, ctx)
+        return Operation("update", filepath, insert_between(lines, start, end, inner))
+    return None
+
+
 def process(root: IndexNode, ctx: Context, *, recursive: bool = False) -> Iterable[Operation]:
     try:
         yield index_operations(root, ctx)
     except SkipIndexFileError as e:
         logger.debug(str(e))
+
+    if ctx.render_toc:
+        for fp in root.files:
+            if op := toc_operation(fp, ctx):
+                yield op
 
     if recursive:
         for x in root.children:
@@ -321,6 +471,28 @@ def main() -> None:
     )
 
     parser.add_argument(
+        "--toc",
+        action="store_true",
+        help="Enable generation of table of contents within non-index files.",
+    )
+    parser.add_argument(
+        "--toc-min-length",
+        type=int,
+        default=2,
+        help=(
+            "Only generate table of contents within files for which it would "
+            "end be longer tha <TOC_MIN_LENGTH> entries."
+        ),
+    )
+    parser.add_argument(
+        "--toc-max-level",
+        choices=(2, 3, 4, 5, 6),
+        type=int,
+        default=3,
+        help="Only generate table of contents for headers up to this level.",
+    )
+
+    parser.add_argument(
         "--recursive",
         "-r",
         action="store_true",
@@ -356,6 +528,9 @@ def main() -> None:
         index_file=args.index_file,
         command=args.command,
         max_depth=args.max_depth,
+        render_toc=args.toc,
+        toc_min_length=args.toc_min_length,
+        toc_max_level=args.toc_max_level,
     )
 
     directory = Path(args.directory)

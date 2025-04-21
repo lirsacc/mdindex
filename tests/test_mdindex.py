@@ -7,6 +7,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 EXAMPLES_DIR = Path(__file__).parent / "examples"
+TOC_EXAMPLES_DIR = Path(__file__).parent / "examples-toc"
 
 
 @contextlib.contextmanager
@@ -79,3 +80,22 @@ def test_ignore(snapshot: object) -> None:
         )
 
         assert snapshot == take_snapshot(test_dir / "foo")
+
+
+def test_toc(snapshot: object) -> None:
+    with workdir(TOC_EXAMPLES_DIR) as test_dir:
+        subprocess.run(
+            [
+                "python",
+                "-m",
+                "mdindex",
+                str(test_dir),
+                "-r",
+                "--toc",
+            ],
+            cwd=test_dir,
+            check=True,
+            capture_output=True,
+        )
+
+        assert snapshot == take_snapshot(test_dir)

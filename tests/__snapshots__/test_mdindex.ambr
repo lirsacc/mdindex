@@ -286,3 +286,213 @@
   <<<< END FILE
   '''
 # ---
+# name: test_toc
+  '''
+  >>>> START FILE: multiple-h1.md
+  Multiple h1 are technically wrong but we should handle gracefully.
+  
+  <!-- mdindex:toc:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [multiple-h1](#multiple-h1)
+    - [Some h2 title](#some-h2-title)
+      - [Some h3 title](#some-h3-title)
+        - [Some h4 title](#some-h4-title)
+  - [Some other h1](#some-other-h1)
+    - [Some underlined h2 title](#some-underlined-h2-title)
+      - [Some h4 title at the wrong nesting level](#some-h4-title-at-the-wrong-nesting-level)
+  
+  <!-- mdindex:toc:end -->
+  
+  # multiple-h1
+  
+  ## Some h2 title
+  
+  ### Some h3 title
+  
+  #### Some h4 title
+  
+  Some other h1
+  =====
+  
+  Some underlined h2 title
+  ---------
+  
+  #### Some h4 title at the wrong nesting level
+  
+  <<<< END FILE
+  >>>> START FILE: h1-underlined.md
+  h1-underlined
+  ==========
+  
+  <!-- mdindex:toc:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [Some h2 title](#some-h2-title)
+    - [Some h3 title](#some-h3-title)
+      - [Some h4 title](#some-h4-title)
+  - [Some underlined h2 title](#some-underlined-h2-title)
+    - [Some h4 title at the wrong nesting level](#some-h4-title-at-the-wrong-nesting-level)
+  
+  <!-- mdindex:toc:end -->
+  
+  This toc should still be well formatted without an h1 title and inserted just
+  after the first h1 title.
+  
+  ## Some h2 title
+  
+  ### Some h3 title
+  
+  #### Some h4 title
+  
+  Some underlined h2 title
+  ---------
+  
+  #### Some h4 title at the wrong nesting level
+  
+  <<<< END FILE
+  >>>> START FILE: too-few-headers.md
+  # Too few headers
+  
+  This file has too few headers and thus no toc will be generated
+  
+  <!-- mdindex:toc:start -->
+  <!-- mdindex:toc:end -->
+  
+  ## Some h2 title
+  
+  <<<< END FILE
+  >>>> START FILE: no-h1.md
+  This toc should still be well formatted without an h1 title and inserted just
+  before the first h2 title.
+  
+  <!-- mdindex:toc:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [Some h2 title](#some-h2-title)
+    - [Some h3 title](#some-h3-title)
+      - [Some h4 title](#some-h4-title)
+  - [Some underlined h2 title](#some-underlined-h2-title)
+    - [Some h4 title at the wrong nesting level](#some-h4-title-at-the-wrong-nesting-level)
+  
+  <!-- mdindex:toc:end -->
+  
+  ## Some h2 title
+  
+  ### Some h3 title
+  
+  #### Some h4 title
+  
+  Some underlined h2 title
+  ---------
+  
+  #### Some h4 title at the wrong nesting level
+  
+  <<<< END FILE
+  >>>> START FILE: h1.md
+  # h1
+  
+  <!-- mdindex:toc:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [Some h2 title](#some-h2-title)
+    - [Some h3 title](#some-h3-title)
+      - [Some h4 title](#some-h4-title)
+  - [Some underlined h2 title](#some-underlined-h2-title)
+    - [Some h4 title at the wrong nesting level](#some-h4-title-at-the-wrong-nesting-level)
+  
+  <!-- mdindex:toc:end -->
+  
+  This toc should still be well formatted without an h1 title and inserted just
+  after the first h1 title.
+  
+  ## Some h2 title
+  
+  ### Some h3 title
+  
+  #### Some h4 title
+  
+  Some underlined h2 title
+  ---------
+  
+  #### Some h4 title at the wrong nesting level
+  
+  <<<< END FILE
+  >>>> START FILE: README.md
+  # TOC examples
+  
+  <!-- mdindex:index:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [h1-underlined](./h1-underlined.md)
+  - [h1](./h1.md)
+  - [multiple-h1](./multiple-h1.md)
+  - [No H1 Or H2](./no-h1-or-h2.md)
+  - [No H1](./no-h1.md)
+  - [No Headers](./no-headers.md)
+  - [Standard TOC](./standard.md)
+  - [Too few headers](./too-few-headers.md)
+  
+  <!-- mdindex:index:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: standard.md
+  # Standard TOC
+  
+  This toc should be well formatted despite nesting issues.
+  
+  <!-- mdindex:toc:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [Some h2 title](#some-h2-title)
+    - [Some h3 title](#some-h3-title)
+      - [Some h4 title](#some-h4-title)
+  - [Some underlined h2 title](#some-underlined-h2-title)
+    - [Some h4 title at the wrong nesting level](#some-h4-title-at-the-wrong-nesting-level)
+  
+  <!-- mdindex:toc:end -->
+  
+  ## Some h2 title
+  
+  ### Some h3 title
+  
+  #### Some h4 title
+  
+  Some underlined h2 title
+  ---------
+  
+  #### Some h4 title at the wrong nesting level
+  
+  <<<< END FILE
+  >>>> START FILE: no-headers.md
+  This file has no headers and will have not TOC
+  
+  <!-- mdindex:toc:start -->
+  <!-- mdindex:toc:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: no-h1-or-h2.md
+  This toc should still be well formatted without an h1 title and inserted just
+  before the first h2 title.
+  
+  <!-- mdindex:toc:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [Some h3 title](#some-h3-title)
+    - [Some h4 title](#some-h4-title)
+    - [Some h4 title at the wrong nesting level](#some-h4-title-at-the-wrong-nesting-level)
+  - [Some other h3 title](#some-other-h3-title)
+  
+  <!-- mdindex:toc:end -->
+  
+  ### Some h3 title
+  
+  #### Some h4 title
+  
+  #### Some h4 title at the wrong nesting level
+  
+  ### Some other h3 title
+  
+  <<<< END FILE
+  '''
+# ---
