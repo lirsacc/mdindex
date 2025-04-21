@@ -98,7 +98,7 @@ class Operation:
 
 
 @dataclass(frozen=True, slots=True)
-class Header:
+class Heading:
     level: int
     value: str
     underlined: bool
@@ -114,9 +114,9 @@ class Header:
 
 
 @dataclass(frozen=True, slots=True)
-class HeaderNode:
-    header: Header
-    children: list[HeaderNode] = field(default_factory=list)
+class HeadingNode:
+    heading: Heading
+    children: list[HeadingNode] = field(default_factory=list)
 
 
 def filter_files(directory: Path, *, ignored_globs: Sequence[str] = ()) -> Iterable[Path]:
@@ -157,8 +157,8 @@ def titlecase(value: str) -> str:
 
 
 def get_title(filepath: Path) -> str:
-    if header := next(iter(extract_headers(get_lines(filepath))), None):
-        return header.value
+    if heading := next(iter(extract_headings(get_lines(filepath))), None):
+        return heading.value
     return titlecase(filepath.stem)
 
 
@@ -283,28 +283,28 @@ def index_operations(section: IndexNode, ctx: Context) -> Operation:
         return Operation("create", output_file, contents)
 
 
-def extract_headers(lines: list[str]) -> Iterable[Header]:
+def extract_headings(lines: list[str]) -> Iterable[Heading]:
     for i, (a, b) in enumerate(zip(lines, [*lines[1:], None])):
         if match := re.match(r"^(#+) (.*)$", a):
             level = len(match.group(1))
-            yield Header(level, match.group(2), underlined=False, lineno=i)
+            yield Heading(level, match.group(2), underlined=False, lineno=i)
         if b and re.match(r"==+", b) and (inner := a.strip()):
-            yield Header(1, inner, underlined=True, lineno=i)
+            yield Heading(1, inner, underlined=True, lineno=i)
         if b and re.match(r"--+", b) and (inner := a.strip()):
-            yield Header(2, inner, underlined=True, lineno=i)
+            yield Heading(2, inner, underlined=True, lineno=i)
 
 
-def build_headers_tree(headers: Iterable[Header], min_level: int = 2) -> Iterable[HeaderNode]:
-    root_nodes: list[HeaderNode] = []
-    stack: list[HeaderNode] = []
+def build_headings_tree(headings: Iterable[Heading], min_level: int = 2) -> Iterable[HeadingNode]:
+    root_nodes: list[HeadingNode] = []
+    stack: list[HeadingNode] = []
 
-    for header in headers:
-        if header.level < min_level:
+    for heading in headings:
+        if heading.level < min_level:
             continue
 
-        node = HeaderNode(header=header)
+        node = HeadingNode(heading=heading)
 
-        while stack and header.level <= stack[-1].header.level:
+        while stack and heading.level <= stack[-1].heading.level:
             stack.pop()
 
         if stack:
@@ -325,9 +325,9 @@ def slugify(value: str) -> str:
     return re.sub(r"[-\s]+", "-", value).strip("-_")
 
 
-def toc_lines(nodes: list[HeaderNode], *, start_depth: int = 0, max_depth: int) -> Iterable[str]:
+def toc_lines(nodes: list[HeadingNode], *, start_depth: int = 0, max_depth: int) -> Iterable[str]:
     for x in nodes:
-        yield f"{('  ' * start_depth)}- [{x.header.value}](#{slugify(x.header.value)})"
+        yield f"{('  ' * start_depth)}- [{x.heading.value}](#{slugify(x.heading.value)})"
         if start_depth < max_depth:
             yield from toc_lines(x.children, start_depth=start_depth + 1, max_depth=max_depth)
 
@@ -344,10 +344,10 @@ def render_toc(inner: list[str], ctx: Context) -> list[str]:
     ]
 
 
-def guess_toc_location_and_level(headers: list[Header]) -> tuple[tuple[int, int], int]:
-    min_level = min(x.level for x in headers)
-    first = headers[0]
-    at_min_level = [x for x in headers if x.level == min_level]
+def guess_toc_location_and_level(headings: list[Heading]) -> tuple[tuple[int, int], int]:
+    min_level = min(x.level for x in headings)
+    first = headings[0]
+    at_min_level = [x for x in headings if x.level == min_level]
 
     if len(at_min_level) > 1 and first.level == min_level:
         # Multiple top levels as long as everything exists under one of them, we
@@ -359,16 +359,16 @@ def guess_toc_location_and_level(headers: list[Header]) -> tuple[tuple[int, int]
         # document title.
         return (first.next_line, first.next_line), min_level + 1
     else:
-        # We may have a top level entry but some headers at lower levels come
+        # We may have a top level entry but some headings at lower levels come
         # before it just put it at the top and include all.
         return (0, 0), min_level
 
 
 def toc_operation(filepath: Path, ctx: Context) -> Operation | None:
     lines = get_lines(filepath)
-    headers = list(extract_headers(lines))
+    headings = list(extract_headings(lines))
 
-    if len(headers) < ctx.toc_min_length:
+    if len(headings) < ctx.toc_min_length:
         return None
 
     section_marks = find_marked_section(lines, TOC_START_MARKER, TOC_END_MARKER)
@@ -376,14 +376,14 @@ def toc_operation(filepath: Path, ctx: Context) -> Operation | None:
     if section_marks is not None:
         # We know where to put the TOC, assume well formed and just ignore the top level.
         start, end = section_marks
-        min_included_level = min(x.level for x in headers) + 1
+        min_included_level = min(x.level for x in headings) + 1
     else:
         # Otherwise guesswork to find a rational place to put it
-        (start, end), min_included_level = guess_toc_location_and_level(headers)
+        (start, end), min_included_level = guess_toc_location_and_level(headings)
 
     toc = list(
         toc_lines(
-            list(build_headers_tree(headers, min_level=min_included_level)),
+            list(build_headings_tree(headings, min_level=min_included_level)),
             max_depth=ctx.toc_max_level,
         )
     )
@@ -478,7 +478,7 @@ def main() -> None:
         choices=(2, 3, 4, 5, 6),
         type=int,
         default=3,
-        help="Only generate table of contents for headers up to this level.",
+        help="Only generate table of contents for headings up to this level.",
     )
 
     parser.add_argument(

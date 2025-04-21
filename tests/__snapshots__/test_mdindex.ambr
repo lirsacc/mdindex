@@ -351,17 +351,6 @@
   #### Some h4 title at the wrong nesting level
   
   <<<< END FILE
-  >>>> START FILE: too-few-headers.md
-  # Too few headers
-  
-  This file has too few headers and thus no toc will be generated
-  
-  <!-- mdindex:toc:start -->
-  <!-- mdindex:toc:end -->
-  
-  ## Some h2 title
-  
-  <<<< END FILE
   >>>> START FILE: no-h1.md
   This toc should still be well formatted without an h1 title and inserted just
   before the first h2 title.
@@ -429,11 +418,29 @@
   - [multiple-h1](./multiple-h1.md)
   - [Some h3 title](./no-h1-or-h2.md)
   - [Some h2 title](./no-h1.md)
-  - [No Headers](./no-headers.md)
+  - [No Headings](./no-headings.md)
   - [Standard TOC](./standard.md)
-  - [Too few headers](./too-few-headers.md)
+  - [Too few headings](./too-few-headings.md)
   
   <!-- mdindex:index:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: too-few-headings.md
+  # Too few headings
+  
+  This file has too few headings and thus no toc will be generated
+  
+  <!-- mdindex:toc:start -->
+  <!-- mdindex:toc:end -->
+  
+  ## Some h2 title
+  
+  <<<< END FILE
+  >>>> START FILE: no-headings.md
+  This file has no headings and will have not TOC
+  
+  <!-- mdindex:toc:start -->
+  <!-- mdindex:toc:end -->
   
   <<<< END FILE
   >>>> START FILE: standard.md
@@ -462,13 +469,6 @@
   ---------
   
   #### Some h4 title at the wrong nesting level
-  
-  <<<< END FILE
-  >>>> START FILE: no-headers.md
-  This file has no headers and will have not TOC
-  
-  <!-- mdindex:toc:start -->
-  <!-- mdindex:toc:end -->
   
   <<<< END FILE
   >>>> START FILE: no-h1-or-h2.md
