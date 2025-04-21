@@ -446,12 +446,24 @@
   #### Some h4 title at the wrong nesting level
   
   <<<< END FILE
+  >>>> START FILE: clear-not-long-enough.md
+  # Too few headings
+  
+  This file has too few headings and thus no toc will be generated but there's already one which should end up cleared.
+  
+  <!-- mdindex:toc:start -->
+  <!-- mdindex:toc:end -->
+  
+  ## Some h2 title
+  
+  <<<< END FILE
   >>>> START FILE: README.md
   # TOC examples
   
   <!-- mdindex:index:start -->
   <!-- WARN: This section is auto-generated. Do not edit manually. -->
   
+  - [Too few headings](./clear-not-long-enough.md)
   - [Should ignore heading looking things within code blocks](./codeblocks.md)
   - [h1-underlined](./h1-underlined.md)
   - [h1](./h1.md)

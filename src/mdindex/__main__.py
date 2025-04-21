@@ -358,6 +358,9 @@ def render_toc(inner: list[str], ctx: Context) -> list[str]:
 
 
 def guess_toc_location_and_level(headings: list[Heading]) -> tuple[tuple[int, int], int]:
+    if not headings:
+        return (0, 0), 1
+
     min_level = min(x.level for x in headings)
     first = headings[0]
     at_min_level = [x for x in headings if x.level == min_level]
@@ -381,15 +384,12 @@ def toc_operation(filepath: Path, ctx: Context) -> Operation | None:
     lines = get_lines(filepath)
     headings = list(extract_headings(lines))
 
-    if len(headings) < ctx.toc_min_length:
-        return None
-
     section_marks = find_marked_section(lines, TOC_START_MARKER, TOC_END_MARKER)
 
     if section_marks is not None:
         # We know where to put the TOC, assume well formed and just ignore the top level.
         start, end = section_marks
-        min_included_level = min(x.level for x in headings) + 1
+        min_included_level = min(x.level for x in headings) + 1 if headings else 1
     else:
         # Otherwise guesswork to find a rational place to put it
         (start, end), min_included_level = guess_toc_location_and_level(headings)
@@ -403,6 +403,10 @@ def toc_operation(filepath: Path, ctx: Context) -> Operation | None:
     if len(toc) >= ctx.toc_min_length:
         inner = render_toc(toc, ctx)
         return Operation("update", filepath, insert_between(lines, start, end, inner))
+    elif section_marks:
+        inner = [TOC_START_MARKER, TOC_END_MARKER]
+        return Operation("update", filepath, insert_between(lines, start, end, inner))
+
     return None
 
 
