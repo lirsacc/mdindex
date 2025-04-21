@@ -5,7 +5,7 @@ readme = "README.md"
 authors = [
     { name = "Charles Lirsac", email = "code@lirsac.com" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dynamic = ["version"]
 classifiers = []
 
