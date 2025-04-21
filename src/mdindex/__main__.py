@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
 
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 WARNING_FILE = "<!-- WARN: This file is auto-generated. Do not edit manually. -->"
 WARNING_COMMAND = "<!-- command: {command} -->"
