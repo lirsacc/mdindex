@@ -1,3 +1,4 @@
+import contextlib
 import itertools
 import shutil
 import subprocess
@@ -5,21 +6,20 @@ import tempfile
 from collections.abc import Iterator
 from pathlib import Path
 
-import pytest
-
 EXAMPLES_DIR = Path(__file__).parent / "examples"
 
 
-@pytest.fixture
-def test_dir() -> Iterator[Path]:
+@contextlib.contextmanager
+def workdir(src: Path) -> Iterator[Path]:
     with tempfile.TemporaryDirectory() as tempdir:
-        shutil.copytree(EXAMPLES_DIR, tempdir, dirs_exist_ok=True)
+        shutil.copytree(src, tempdir, dirs_exist_ok=True)
         yield Path(tempdir)
 
 
 # Smoke test the base copy worked as expected
-def test_smoke(test_dir: Path) -> None:
-    assert take_snapshot(EXAMPLES_DIR) == take_snapshot(test_dir)
+def test_smoke() -> None:
+    with workdir(EXAMPLES_DIR) as test_dir:
+        assert take_snapshot(EXAMPLES_DIR) == take_snapshot(test_dir)
 
 
 def take_snapshot(ref: Path) -> str:
@@ -35,33 +35,47 @@ def take_snapshot(ref: Path) -> str:
     )
 
 
-def test_examples(test_dir: Path, snapshot: object) -> None:
-    subprocess.run(
-        ["python", "-m", "mdindex", str(test_dir), "-r"],
-        cwd=test_dir,
-        check=True,
-        capture_output=True,
-    )
+def test_examples(snapshot: object) -> None:
+    with workdir(EXAMPLES_DIR) as test_dir:
+        subprocess.run(
+            ["python", "-m", "mdindex", str(test_dir), "-r"],
+            cwd=test_dir,
+            check=True,
+            capture_output=True,
+        )
 
-    assert snapshot == take_snapshot(test_dir)
+        assert snapshot == take_snapshot(test_dir)
 
 
-def test_ignore(test_dir: Path, snapshot: object) -> None:
-    subprocess.run(
-        [
-            "python",
-            "-m",
-            "mdindex",
-            str(test_dir / "foo"),
-            "-r",
-            # Will ignore everything under deep
-            "--ignore=**/deep/**",
-            # Will not ignore two.md
-            "--ignore=two",
-        ],
-        cwd=test_dir,
-        check=True,
-        capture_output=True,
-    )
+def test_examples_no_recursive(snapshot: object) -> None:
+    with workdir(EXAMPLES_DIR) as test_dir:
+        subprocess.run(
+            ["python", "-m", "mdindex", str(test_dir)],
+            cwd=test_dir,
+            check=True,
+            capture_output=True,
+        )
 
-    assert snapshot == take_snapshot(test_dir / "foo")
+        assert snapshot == take_snapshot(test_dir)
+
+
+def test_ignore(snapshot: object) -> None:
+    with workdir(EXAMPLES_DIR) as test_dir:
+        subprocess.run(
+            [
+                "python",
+                "-m",
+                "mdindex",
+                str(test_dir / "foo"),
+                "-r",
+                # Will ignore everything under deep
+                "--ignore=**/deep/**",
+                # Will not ignore two.md as that's not a match
+                "--ignore=two",
+            ],
+            cwd=test_dir / "foo",
+            check=True,
+            capture_output=True,
+        )
+
+        assert snapshot == take_snapshot(test_dir / "foo")

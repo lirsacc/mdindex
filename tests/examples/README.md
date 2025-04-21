@@ -1,7 +1,7 @@
 # Examples for testing
 
-<!-- mdindex:summary:start -->
-<!-- mdindex:summary:end -->
+<!-- mdindex:index:start -->
+<!-- mdindex:index:end -->
 
 ---
 

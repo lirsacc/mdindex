@@ -8,8 +8,26 @@
   >>>> START FILE: README.md
   # Examples for testing
   
-  <!-- mdindex:summary:start -->
-  <!-- mdindex:summary:end -->
+  <!-- mdindex:index:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [Root file](./root.md)
+  - [Examples: bar/README](./bar)
+    - [One](./bar/one.md)
+    - [Two](./bar/two.md)
+  - [Baz](./baz)
+    - [Camel Cased Filename](./baz/camelCasedFilename.md)
+    - [Dash Cased Filename](./baz/dash-cased-filename.md)
+    - [Snake Cased Filename Copy](./baz/snake_cased_filename%20copy.md)
+  - [Foo](./foo)
+    - [This file should be included with this title](./foo/one.md)
+    - [This file should be included with this title too](./foo/two.md)
+    - [This uses an underline title which should also work](./foo/underlined.md)
+    - [Deep](./foo/deep)
+      - [Nested1](./foo/deep/nested1.md)
+      - [Deeper](./foo/deep/deeper)
+  
+  <!-- mdindex:index:end -->
   
   ---
   
@@ -128,6 +146,95 @@
   
   - [Nested3](./nested3.md)
   <!-- mdindex:index:end -->
+  
+  <<<< END FILE
+  >>>> START FILE: foo/deep/deeper/too-deep/nested3.md
+  
+  <<<< END FILE
+  '''
+# ---
+# name: test_examples_no_recursive
+  '''
+  >>>> START FILE: root.md
+  # Root file
+  
+  <<<< END FILE
+  >>>> START FILE: README.md
+  # Examples for testing
+  
+  <!-- mdindex:index:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [Root file](./root.md)
+  - [Examples: bar/README](./bar)
+    - [One](./bar/one.md)
+    - [Two](./bar/two.md)
+  - [Baz](./baz)
+    - [Camel Cased Filename](./baz/camelCasedFilename.md)
+    - [Dash Cased Filename](./baz/dash-cased-filename.md)
+    - [Snake Cased Filename Copy](./baz/snake_cased_filename%20copy.md)
+  - [Foo](./foo)
+    - [This file should be included with this title](./foo/one.md)
+    - [This file should be included with this title too](./foo/two.md)
+    - [This uses an underline title which should also work](./foo/underlined.md)
+    - [Deep](./foo/deep)
+      - [Nested1](./foo/deep/nested1.md)
+      - [Deeper](./foo/deep/deeper)
+  
+  <!-- mdindex:index:end -->
+  
+  ---
+  
+  This file should end up containing a summary above this.
+  
+  <<<< END FILE
+  >>>> START FILE: foo/one.md
+  # This file should be included with this title
+  
+  Content after the title doesn't matter.
+  
+  <<<< END FILE
+  >>>> START FILE: foo/two.md
+  Content before the title doesn't matter we pick the first one.
+  
+  # This file should be included with this title too
+  
+  Content after the title still doesn't matter.
+  
+  <<<< END FILE
+  >>>> START FILE: foo/underlined.md
+  This uses an underline title which should also work
+  ===================================================
+  
+  <<<< END FILE
+  >>>> START FILE: baz/dash-cased-filename.md
+  This file doesn't have a title in the file so we'll include the title inferred from the filename, parsing dash case into title case.
+  
+  <<<< END FILE
+  >>>> START FILE: baz/snake_cased_filename copy.md
+  This file doesn't have a title in the file so we'll include the title inferred from the filename, parsing snake case into title case.
+  
+  <<<< END FILE
+  >>>> START FILE: baz/camelCasedFilename.md
+  This file doesn't have a title in the file so we'll include the title inferred from the filename, parsing camel case into title case.
+  
+  <<<< END FILE
+  >>>> START FILE: bar/README.md
+  # Examples: bar/README
+  
+  This file should not end up containing a summary as it exists already without markers.
+  
+  <<<< END FILE
+  >>>> START FILE: bar/one.md
+  
+  <<<< END FILE
+  >>>> START FILE: bar/two.md
+  
+  <<<< END FILE
+  >>>> START FILE: foo/deep/nested1.md
+  
+  <<<< END FILE
+  >>>> START FILE: foo/deep/deeper/nested2.md
   
   <<<< END FILE
   >>>> START FILE: foo/deep/deeper/too-deep/nested3.md
