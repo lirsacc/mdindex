@@ -286,7 +286,15 @@ def index_operations(section: IndexNode, ctx: Context) -> Operation:
 
 
 def extract_headings(lines: list[str]) -> Iterable[Heading]:
+    within_ignored_block = False
     for i, (a, b) in enumerate(zip(lines, [*lines[1:], None])):
+        if a.startswith("```"):
+            within_ignored_block = not within_ignored_block
+            continue
+
+        if within_ignored_block:
+            continue
+
         if match := re.match(r"^(#+) (.*)$", a):
             level = len(match.group(1))
             yield Heading(level, match.group(2), underlined=False, lineno=i)

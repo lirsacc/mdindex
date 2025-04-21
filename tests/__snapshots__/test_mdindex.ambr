@@ -321,6 +321,45 @@
   #### Some h4 title at the wrong nesting level
   
   <<<< END FILE
+  >>>> START FILE: codeblocks.md
+  # Should ignore heading looking things within code blocks
+  
+  <!-- mdindex:toc:start -->
+  <!-- WARN: This section is auto-generated. Do not edit manually. -->
+  
+  - [Examples](#examples)
+    - [This applies to ticked blocks:](#this-applies-to-ticked-blocks)
+    - [Ticked+tagged blocks:](#tickedtagged-blocks)
+    - [And also indented blocks:](#and-also-indented-blocks)
+  - [Next header](#next-header)
+  
+  <!-- mdindex:toc:end -->
+  
+  ## Examples
+  
+  ### This applies to ticked blocks:
+  
+  ```
+  # I am a comment not a heading
+  a = 1
+  ```
+  
+  ### Ticked+tagged blocks:
+  
+  ```python
+  # I am a comment not a heading
+  a = 1
+  ```
+  
+  ### And also indented blocks:
+  
+      # I am a comment not a heading
+      a = 1
+  
+  
+  ## Next header
+  
+  <<<< END FILE
   >>>> START FILE: h1-underlined.md
   h1-underlined
   ==========
@@ -413,6 +452,7 @@
   <!-- mdindex:index:start -->
   <!-- WARN: This section is auto-generated. Do not edit manually. -->
   
+  - [Should ignore heading looking things within code blocks](./codeblocks.md)
   - [h1-underlined](./h1-underlined.md)
   - [h1](./h1.md)
   - [multiple-h1](./multiple-h1.md)
