@@ -294,7 +294,6 @@ def index_operations(section: IndexNode, ctx: Context) -> Operation:
 
 
 def extract_headers(lines: list[str]) -> Iterable[Header]:
-    lines = list(lines)
     for i, (a, b) in enumerate(zip(lines, [*lines[1:], None])):
         if match := re.match(r"^(#+) (.*)$", a):
             level = len(match.group(1))
